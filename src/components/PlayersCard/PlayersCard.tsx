@@ -38,7 +38,7 @@ export const PlayersCard = ({}: PropsWithChildren<Props>) => {
     navigate(RouteTypes.GAME);
   }
 
-  const title = is_vs_pc ? "Player" : "Players";
+  const title = is_vs_pc ? "Player " : "Players";
   const subTitle = is_vs_pc ? "Enter your name" : "Provide players names";
   const inputLabel = is_vs_pc ? undefined : "Player 1";
   const inputPlaceholder = is_vs_pc ? "Enter your name here" : "Enter players name here";
@@ -49,7 +49,7 @@ export const PlayersCard = ({}: PropsWithChildren<Props>) => {
         <div className="title-wrapper">
           <h1>
             {title}
-            {is_vs_pc && <span className="title-vs-ai">vs AI</span>}
+            {is_vs_pc && <span className="title-vs-ai"> vs AI</span>}
           </h1>
           <div className="subtitle">{subTitle}</div>
         </div>
