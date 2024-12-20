@@ -1,0 +1,214 @@
+.btn {
+  display: flex;
+  padding: 11px 27px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  background: var(--Blue);
+  color: var(--White);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 150%;
+  cursor: pointer;
+
+  &.wide {
+    width: 100%;
+  }
+
+  &:hover {
+    background: var(--Blue-hover);
+  }
+
+  &:disabled {
+    background: var(--Blue);
+    opacity: 0.25;
+    cursor: default;
+  }
+
+  &.text {
+    color: var(--Grey);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    padding: 0px;
+    border-radius: 0px;
+    background: none;
+
+    &:hover {
+      color: var(--Dark-grey);
+    }
+  }
+
+  &.purple {
+    background-color: var(--Red);
+
+    &:hover {
+      background: var(--Light-red);
+    }
+  }
+
+  &.outline {
+    outline: 1px solid var(--Blue);
+    background: none;
+    color: var(--Blue);
+
+    &:hover {
+      background: var(--Light-blue);
+    }
+
+    &:disabled {
+      border: 1px solid var(--Blue);
+      opacity: 0.25;
+    }
+
+    @media (max-width: 700px) {
+      height: 46px;
+    }
+
+    @media (max-width: 400px) {
+      height: 42px;
+    }
+  }
+
+  &.icon {
+    background-color: transparent;
+    line-height: 0;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      padding: 5px;
+      border-radius: 8px;
+      background: var(--Light-blue);
+    }
+  }
+
+  &.info {
+    background-color: var(--Light-grey);
+    outline: 3px solid var(--White);
+    outline-offset: -3px;
+
+    line-height: 0;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--Dark-grey);
+      width: 24px;
+      height: 24px;
+    }
+
+    &.active {
+      background: var(--Light-blue);
+
+      &:hover {
+        border-radius: 50%;
+        background: var(--White);
+      }
+    }
+
+    &:hover {
+      border-radius: 50%;
+      background: var(--Light-blue);
+    }
+  }
+
+  &.menu {
+    color: var(--Grey);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 150%;
+    background: none;
+
+    &.links {
+      background: url(./img/icon-link.svg) 20px center no-repeat;
+      padding-left: 44px;
+
+      @media (max-width: 700px) {
+        background-position: center center;
+      }
+
+      &.active {
+        color: var(--Blue);
+        background: url(./img/icon-link-active.svg) 20px center no-repeat;
+        background-color: var(--Light-blue);
+
+        &:hover {
+          cursor: default;
+          background-color: var(--Light-blue);
+        }
+
+        @media (max-width: 700px) {
+          background-position: center center;
+        }
+      }
+
+      &:hover {
+        color: var(--Blue);
+        background: url(./img/icon-link-active.svg) 20px center no-repeat;
+
+        @media (max-width: 700px) {
+          background-position: center center;
+        }
+      }
+    }
+
+    &.details {
+      background: url(./img/icon-profile-details-header.svg) 20px center no-repeat;
+      padding-left: 44px;
+
+      @media (max-width: 700px) {
+        background-position: center center;
+      }
+
+      &.active {
+        color: var(--Blue);
+        background: url(./img/icon-profile-details-header-active.svg) 20px center no-repeat;
+        background-color: var(--Light-blue);
+
+        &:hover {
+          cursor: default;
+          background-color: var(--Light-blue);
+        }
+
+        @media (max-width: 700px) {
+          background-position: center center;
+        }
+      }
+
+      &:hover {
+        color: var(--Blue);
+        background: url(./img/icon-profile-details-header-active.svg) 20px center no-repeat;
+
+        @media (max-width: 700px) {
+          background-position: center center;
+        }
+      }
+    }
+
+    @media (max-width: 700px) {
+      height: 46px;
+      background-position: center center;
+
+      & span {
+        display: none;
+      }
+    }
+
+    @media (max-width: 400px) {
+      height: 42px;
+      background-position: center center;
+    }
+  }
+}

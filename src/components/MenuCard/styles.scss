@@ -1,0 +1,15 @@
+.menu-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  @media (max-width: 490px) {
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--White);
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 32px;
+  }
+}

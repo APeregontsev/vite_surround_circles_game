@@ -1,0 +1,133 @@
+.input-wrapper {
+  width: 100%;
+  position: relative;
+
+  & .input-title {
+    display: inline-block;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: var(--Dark-grey);
+    margin-bottom: 5px;
+  }
+
+  & .login-input {
+    height: 48px;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 8px;
+    color: var(--Dark-grey);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    border: 1px solid var(--Borders);
+    background: var(--White);
+    text-align: center;
+
+    &.red {
+      color: var(--Red);
+      text-transform: capitalize;
+      font-weight: 600;
+
+      &:focus {
+        outline: 1px solid var(--Red);
+
+        &::placeholder {
+          opacity: 0%;
+        }
+      }
+    }
+
+    &.blue {
+      color: var(--Blue);
+      text-transform: capitalize;
+      font-weight: 600;
+
+      &:focus {
+        outline: 1px solid var(--Blue);
+
+        &::placeholder {
+          opacity: 0%;
+        }
+      }
+    }
+
+    &::placeholder {
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 150%;
+      color: var(--Dark-grey);
+      opacity: 0.5;
+    }
+  }
+
+  & .warning {
+    position: absolute;
+    top: -50%;
+    right: 0%;
+    color: var(--Red);
+    text-align: right;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    display: none;
+  }
+
+  &.empty {
+    & .input-title {
+      color: var(--Red);
+      display: inline-block;
+      margin-bottom: 5px;
+    }
+
+    & .warning {
+      display: block;
+    }
+
+    & .login-input {
+      border: 1px solid var(--Red);
+
+      &:focus {
+        outline: none;
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+.inner-input-wrapper {
+  position: relative;
+
+  &.blue {
+    &::before {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 50%;
+      transform: translate3d(16px, -50%, 0);
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background-color: var(--Blue);
+      z-index: 10;
+    }
+  }
+  &.red {
+    &::before {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 50%;
+      transform: translate3d(16px, -50%, 0);
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background-color: var(--Red);
+      z-index: 10;
+    }
+  }
+}

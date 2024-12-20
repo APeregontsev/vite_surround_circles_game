@@ -1,0 +1,87 @@
+@charset "UTF-8";
+@font-face {
+  font-family: "Instrument Sans";
+  src: url("./fonts/InstrumentSans-Regular.ttf") format("truetype");
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Instrument Sans";
+  src: url("./fonts/InstrumentSans-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+}
+@font-face {
+  font-family: "Instrument Sans";
+  src: url("./fonts/InstrumentSans-Bold.ttf") format("truetype");
+  font-weight: 700;
+}
+
+*,
+*::before,
+*::after {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+}
+
+img {
+  vertical-align: top;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: inherit;
+  font-size: inherit;
+}
+
+h1 {
+  color: var(--Dark-grey);
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 150%;
+  margin-bottom: 8px;
+
+  @media (max-width: 490px) {
+    font-size: 24px;
+  }
+}
+
+html,
+body {
+  min-height: 100vh;
+  font-size: 16px;
+  font-weight: normal;
+  font-family: "Instrument Sans", serif;
+}
+
+:root {
+  --Blue: #1475da;
+  --Blue-hover: #1475da94;
+  --Light-blue: #bccee973;
+  --Red: #da0d52;
+  --Light-red: #da0d529e;
+  --Dark-grey: #333333;
+  --Grey: #737373;
+  --Borders: #d9d9d9;
+  --Light-grey: #fafafa;
+  --White: #ffffff;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+  height: 100vh;
+  background-color: var(--Light-grey);
+}
