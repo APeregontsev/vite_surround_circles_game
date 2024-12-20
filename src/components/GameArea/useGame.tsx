@@ -63,8 +63,6 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
 
           circles[i].isSurrounded = true;
 
-          console.log("checked .................", checked);
-
           if (checked.size > 0) {
             for (const item of checked) {
               if (
@@ -78,7 +76,6 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
             }
           }
 
-          console.log("surroundedBy --------------", surroundedBy);
           if (surroundedBy.size > 0) {
             const path = drawPath({ surroundedBy, checked, gridSizeX, circleDiameter });
 
@@ -121,7 +118,7 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
 
       const checkedTemp = new Set<number>();
 
-      console.log(`pc_turn_____________inside_for__${i}`);
+      /*    console.log(`pc_turn_____________inside_for__${i}`); */
 
       if (
         circles[i].fillColor === palette.blue &&
@@ -138,8 +135,8 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
           failedCheck,
         })
       ) {
-        console.log("pc_turn_____________checked", checked);
-        console.log(`pc_turn_____________surroundedBy___${i}`, surroundedBy);
+        /*   console.log("pc_turn_____________checked", checked);
+        console.log(`pc_turn_____________surroundedBy___${i}`, surroundedBy); */
 
         // Lets merge checked circles if they can be surrounded, otherwise ignore them
         if (checkedTemp.size) checkedTemp.forEach((item) => checked.add(item));
@@ -169,6 +166,8 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
         }).surroundedBy[0].index ?? getRandomMove(circles)
     );
   }, [isPlayerA]);
+
+  console.log(".....................................surrounded ", surrounded);
 
   return { computersMove, setComputersMove, makeATurn, isPlayerA, isShowIndex, is_vs_pc };
 }

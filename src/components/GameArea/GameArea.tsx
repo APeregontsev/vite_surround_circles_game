@@ -45,8 +45,7 @@ export const GameArea = ({}: PropsWithChildren<Props>) => {
 
   //---------------------------------------------------
 
-  /*   console.log("surrounded ", surrounded);
-  console.log("pathToDraw ***", pathToDraw); */
+  console.log(".....................................pathToDraw ***", pathToDraw);
 
   return (
     <div className="canvas-wrapper" ref={canvasRef}>
@@ -70,7 +69,7 @@ export const GameArea = ({}: PropsWithChildren<Props>) => {
                       /*    mouseLeaveHandler(); */
                     }}
                     opacity={item.isSurrounded ? 0.3 : 1}
-                    onMouseEnter={() => mouseEnterHandler(item)}
+                    /*  onMouseEnter={() => mouseEnterHandler(item)} */
                     onClick={() => makeATurn(index)}
                     onTap={() => makeATurn(index)}
                   />

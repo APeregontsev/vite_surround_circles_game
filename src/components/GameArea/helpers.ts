@@ -128,10 +128,10 @@ export function preRecursiveCheck({ circles, gridSizeX, activePlayerColor, index
 
   const rowStart = index - (index % gridSizeX);
   const rowEnd = rowStart + gridSizeX - 1;
-  const colEnd = gridSizeX - row - 1;
+  const colEnd = circles.length / gridSizeX - 1;
 
-  // If our circle situayted on the board end - exit cause it cant be surrounded
-  if (rowStart === index || rowEnd === index || row === 0 || row === 39) return false;
+  // If our circle situated on the board end - exit cause it cant be surrounded
+  if (rowStart === index || rowEnd === index || row === 0 || row === colEnd) return false;
 
   // Lets check line to the left
 
@@ -187,8 +187,6 @@ export function drawPath({ surroundedBy, checked, gridSizeX, circleDiameter }: T
     checkedArray: checked,
     gridSizeX,
   });
-
-  console.log("dotsToRemove", dotsToRemove);
 
   const circlesToDrawLine = circles.filter(({ index }) => !dotsToRemove.has(index));
 
@@ -300,15 +298,15 @@ export function isCanBeSurroundedRecursive({
   if (checkedTemp.has(index)) return true;
 
   // Lets limit depth of the rersion until better algorithm is applied
-  console.log("..........................................DEPTH", depth);
+  /*   console.log("..........................................DEPTH", depth); */
   if (depth >= 60) {
     return true;
   }
 
   const col = index % gridSizeX;
-
+  /* 
   console.log(`1_inside_recursion__${index}____prevIndex`, prevIndex);
-  console.log(`2_inside_recursion__${index}____index`, index);
+  console.log(`2_inside_recursion__${index}____index`, index); */
 
   let preNeighbors = [
     index - 1, // left
@@ -319,9 +317,8 @@ export function isCanBeSurroundedRecursive({
 
   let neighbors = [];
 
-  console.log(`3_inside_recursion__${index}____preNeighbors`, preNeighbors);
-
-  if (!preNeighbors.length) return false;
+  /*   console.log(`3_inside_recursion__${index}____preNeighbors`, preNeighbors) */ if (!preNeighbors.length)
+    return false;
 
   if (prevIndex) {
     preNeighbors = preNeighbors.filter((x) => x !== prevIndex);
@@ -349,13 +346,13 @@ export function isCanBeSurroundedRecursive({
 
   let allSurrounded = true;
 
-  console.log(`4.0_!!!!!!!!!___neighbors_checked`, checked);
-  console.log(`4_!!!!!!!!!___neighbors`, neighbors);
+  /*   console.log(`4.0_!!!!!!!!!___neighbors_checked`, checked);
+  console.log(`4_!!!!!!!!!___neighbors`, neighbors); */
 
   for (const neighborIndex of neighbors) {
     const neighbor = circles[neighborIndex];
 
-    console.log(`5_inside_neighbors__${neighborIndex}____neighbor`);
+    /*   console.log(`5_inside_neighbors__${neighborIndex}____neighbor`); */
 
     if (
       (neighbor.fillColor === palette.grey || neighbor.fillColor === palette.red) &&
@@ -380,7 +377,7 @@ export function isCanBeSurroundedRecursive({
         failedCheck,
       })
     ) {
-      console.log(`6_allSurrounded___FALSE__${neighborIndex}`);
+      /*       console.log(`6_allSurrounded___FALSE__${neighborIndex}`); */
 
       checked.add(neighborIndex);
 
