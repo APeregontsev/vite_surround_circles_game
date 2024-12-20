@@ -1,5 +1,4 @@
 import "./App.scss";
-import { Modal } from "./components";
 import { currentRoute } from "./constants/routes";
 import { useSettings } from "./store/store";
 
