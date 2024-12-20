@@ -69,7 +69,7 @@ export const GameArea = ({}: PropsWithChildren<Props>) => {
                       /*    mouseLeaveHandler(); */
                     }}
                     opacity={item.isSurrounded ? 0.3 : 1}
-                    /*  onMouseEnter={() => mouseEnterHandler(item)} */
+                    onMouseEnter={() => mouseEnterHandler(item)}
                     onClick={() => makeATurn(index)}
                     onTap={() => makeATurn(index)}
                   />
