@@ -50,6 +50,10 @@
       max-width: 160px;
       min-width: 160px;
     }
+
+    @media (max-width: 425px) {
+      border-bottom: 2px solid transparent;
+    }
   }
 
   .player-score {
@@ -113,8 +117,9 @@
           left: -24px;
         }
 
-        @media (max-width: 405px) {
+        @media (max-width: 425px) {
           left: -18px;
+          display: none;
         }
       }
 
@@ -142,6 +147,12 @@
       .playername-wrapper {
         &::before {
           opacity: 100%;
+        }
+      }
+
+      .player-name {
+        @media (max-width: 425px) {
+          border-bottom: 2px solid var(--Blue);
         }
       }
     }
@@ -204,8 +215,9 @@
           right: -24px;
         }
 
-        @media (max-width: 405px) {
+        @media (max-width: 425px) {
           right: -18px;
+          display: none;
         }
       }
 
@@ -218,6 +230,12 @@
       .playername-wrapper {
         &::before {
           opacity: 100%;
+        }
+      }
+
+      .player-name {
+        @media (max-width: 425px) {
+          border-bottom: 2px solid var(--Red);
         }
       }
     }
