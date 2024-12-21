@@ -1,0 +1,24 @@
+.rules-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rules-img {
+  width: 100%;
+  height: auto;
+}
+
+.rules-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 40px;
+}
+
+.rules-list-item {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+}

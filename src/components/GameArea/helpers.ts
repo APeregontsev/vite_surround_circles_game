@@ -140,8 +140,11 @@ export function preRecursiveCheck({ circles, gridSizeX, activePlayerColor, index
 
     if (element?.fillColor === activePlayerColor) {
       leftLine = true;
+      break;
     }
   }
+
+  if (!leftLine) return false;
 
   // Lets check line to the right
 
@@ -150,8 +153,11 @@ export function preRecursiveCheck({ circles, gridSizeX, activePlayerColor, index
 
     if (element?.fillColor === activePlayerColor) {
       rightLine = true;
+      break;
     }
   }
+
+  if (!rightLine) return false;
 
   // Lets check line to the top
 
@@ -160,8 +166,11 @@ export function preRecursiveCheck({ circles, gridSizeX, activePlayerColor, index
 
     if (element?.fillColor === activePlayerColor) {
       topLine = true;
+      break;
     }
   }
+
+  if (!topLine) return false;
 
   // Lets check line to the bottom
 
@@ -170,8 +179,11 @@ export function preRecursiveCheck({ circles, gridSizeX, activePlayerColor, index
 
     if (element?.fillColor === activePlayerColor) {
       bottomLine = true;
+      break;
     }
   }
+
+  if (!bottomLine) return false;
 
   return leftLine && rightLine && topLine && bottomLine;
 }
@@ -378,11 +390,8 @@ export function isCanBeSurroundedRecursive({
       })
     ) {
       /*       console.log(`6_allSurrounded___FALSE__${neighborIndex}`); */
-
       checked.add(neighborIndex);
-
       allSurrounded = false;
-
       failedCheck.add(neighborIndex);
 
       break;

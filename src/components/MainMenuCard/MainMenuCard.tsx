@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from "react";
 import { RouteTypes, TGameType, useSettings, useStore } from "src/store/store";
 import { Button } from "src/ui";
-import { MenuCard, Modal } from "..";
+import { MenuCard, Modal, Rules, Statistics } from "..";
 import "./styles.scss";
 
 type Props = {};
@@ -43,18 +43,26 @@ export const MainMenuCard = ({}: PropsWithChildren<Props>) => {
             Play vs Player
           </Button>
 
-          <Button fullwidth outlined onClick={toggleStat}>
-            Statistics
-          </Button>
-
           <Button outlined fullwidth onClick={toggleRules}>
             Rules
+          </Button>
+
+          <Button fullwidth outlined onClick={toggleStat}>
+            Statistics
           </Button>
         </div>
         <div className="copyright">© {currentYear}, APeregontsev</div>
       </div>
-      {showStat && <Modal toggleModal={toggleStat}>STATT !!!!!!!!!!!!</Modal>}
-      {showRules && <Modal toggleModal={toggleRules}>RULES !!!!!!!!!!!!</Modal>}
+      {showStat && (
+        <Modal toggleModal={toggleStat}>
+          <Statistics toggleStat={toggleStat} />
+        </Modal>
+      )}
+      {showRules && (
+        <Modal toggleModal={toggleRules}>
+          <Rules toggleRules={toggleRules} />
+        </Modal>
+      )}
     </MenuCard>
   );
 };

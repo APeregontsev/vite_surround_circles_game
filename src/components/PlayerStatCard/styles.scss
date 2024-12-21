@@ -21,8 +21,6 @@
     flex-basis: 50%;
     font-size: 20px;
 
-    z-index: 101;
-
     @media (max-width: 585px) {
       display: block;
     }
@@ -132,26 +130,22 @@
       }
 
       &::after {
-        content: ":";
+        content: "";
+        width: 6px;
+        height: 6px;
+        background-color: black;
+        box-shadow: 0 12px 0 black;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         font-size: 32px;
         color: var(--Dark-grey);
         position: absolute;
-        top: -7px;
-        right: -15px;
+        top: 11px;
+        right: -13px;
         z-index: 10;
-
-        @media (max-width: 885px) {
-          right: -14px;
-        }
-
-        @media (max-width: 380px) {
-          right: -15px;
-        }
       }
     }
 
