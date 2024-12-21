@@ -118,7 +118,7 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
 
       const checkedTemp = new Set<number>();
 
-      /*    console.log(`pc_turn_____________inside_for__${i}`); */
+      console.log(`pc_turn_____________inside_for__${i}`);
 
       if (
         circles[i].fillColor === palette.blue &&
@@ -167,7 +167,7 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
     );
   }, [isPlayerA]);
 
-  console.log(".....................................surrounded ", surrounded);
+  /*   console.log(".....................................surrounded ", surrounded); */
 
   return { computersMove, setComputersMove, makeATurn, isPlayerA, isShowIndex, is_vs_pc };
 }

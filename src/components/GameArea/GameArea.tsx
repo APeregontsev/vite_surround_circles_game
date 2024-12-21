@@ -44,8 +44,8 @@ export const GameArea = ({}: PropsWithChildren<Props>) => {
   const { isVisible } = useBlink({ computersMove, isPlayerA });
 
   //---------------------------------------------------
-
-  console.log(".....................................pathToDraw ***", pathToDraw);
+  /* 
+  console.log(".....................................pathToDraw ***", pathToDraw); */
 
   return (
     <div className="canvas-wrapper" ref={canvasRef}>
