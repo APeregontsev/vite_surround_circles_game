@@ -1,7 +1,14 @@
 import React from "react";
 import { palette } from "src/constants/constants";
 import { TGameType, useStore } from "src/store/store";
-import { drawPath, getRandomMove, isCanBeSurroundedRecursive, isSurroundedRecursive } from "./helpers";
+import {
+  drawPath,
+  getRandomMoveNextToClicked,
+  isCanBeSurroundedRecursive,
+  isCanBeSurroundedRecursive2,
+  isSurroundedRecursive,
+  takeAMove,
+} from "./helpers";
 import { TCircle, TPath } from "./types";
 
 type Props = {
@@ -103,13 +110,16 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
   React.useEffect(() => {
     if (!isPlayerA || !is_vs_pc || (is_vs_pc && !isPlayerA)) return;
 
-    const startOfRange = circles.findIndex((x) => x.isClicked && x.fillColor === palette.blue);
-    const endOfRange = circles.findLastIndex((x) => x.isClicked && x.fillColor === palette.blue);
+    console.log("activePlayerColor", activePlayerColor === "#1475da" ? "Blue" : "Red");
+    console.log("secondaryPlayerColor", secondaryPlayerColor === "#1475da" ? "Blue" : "Red");
+
+    const startOfRange = circles.findIndex((x) => x.isClicked);
+    const endOfRange = circles.findLastIndex((x) => x.isClicked);
 
     const checked = new Set<number>();
     const failedCheck = new Set<number>();
 
-    const possibleTurns: { checkedIndex: number; surroundedBy: TCircle[]; value?: number }[] = [];
+    const possiblePcMooves: { checkedIndex: number; surroundedBy: TCircle[] }[] = [];
 
     if (startOfRange < 0) return;
 
@@ -117,8 +127,6 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
       const surroundedBy = new Set<TCircle>();
 
       const checkedTemp = new Set<number>();
-
-      console.log(`pc_turn_____________inside_for__${i}`);
 
       if (
         circles[i].fillColor === palette.blue &&
@@ -135,39 +143,93 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
           failedCheck,
         })
       ) {
-        /*   console.log("pc_turn_____________checked", checked);
-        console.log(`pc_turn_____________surroundedBy___${i}`, surroundedBy); */
-
         // Lets merge checked circles if they can be surrounded, otherwise ignore them
         if (checkedTemp.size) checkedTemp.forEach((item) => checked.add(item));
 
-        possibleTurns.push({ checkedIndex: i, surroundedBy: [...surroundedBy] });
+        possiblePcMooves.push({ checkedIndex: i, surroundedBy: [...surroundedBy] });
       }
     }
 
-    console.log("pc_turn.............................setTurn<<<<<<<<<<<<<<<<<<<<", possibleTurns);
+    //-------------------------------------------------------------------------------------
 
-    if (!possibleTurns.length) return makeATurn(getRandomMove(circles));
+    const possibleUserMooves: { checkedIndex: number; surroundedBy: TCircle[] }[] = [];
 
-    if (!possibleTurns.filter((turn) => turn?.surroundedBy?.length).length) {
-      return makeATurn(getRandomMove(circles));
+    if (true) {
+      const checked = new Set<number>();
+      const failedCheck = new Set<number>();
+
+      for (let i = startOfRange; i <= endOfRange; i++) {
+        const surroundedBy = new Set<TCircle>();
+        const checkedTemp = new Set<number>();
+
+        if (
+          circles[i].fillColor === palette.red &&
+          !circles[i].isSurrounded &&
+          !checked.has(i) &&
+          isCanBeSurroundedRecursive2({
+            circles,
+            gridSizeX,
+            activePlayerColor,
+            index: i,
+            checked,
+            surroundedBy,
+            checkedTemp,
+            failedCheck,
+          })
+        ) {
+          // Lets merge checked circles if they can be surrounded, otherwise ignore them
+          if (checkedTemp.size) checkedTemp.forEach((item) => checked.add(item));
+
+          possibleUserMooves.push({ checkedIndex: i, surroundedBy: [...surroundedBy] });
+        }
+      }
+    }
+    /*     console.log("user_turn.............................setTurn<<<<<<<<<<<<<<<<<<<<", possibleUserMooves);
+    console.log("pc_turn.............................setTurn<<<<<<<<<<<<<<<<<<<<", possiblePcMooves); */
+
+    //-------------------------------------------------------------------------------------
+
+    const availablePcMooves = possiblePcMooves.filter((turn) => turn?.surroundedBy?.length);
+    const availableUserMooves = possibleUserMooves.filter((turn) => turn?.surroundedBy?.length);
+
+    const isPcMooves = possiblePcMooves.length && availablePcMooves.length;
+    const isUserMooves = possibleUserMooves.length && availableUserMooves.length;
+
+    // 1.
+    if (!isPcMooves && !isUserMooves) return makeATurn(getRandomMoveNextToClicked(circles, gridSizeX));
+
+    // 2.
+    if (!isPcMooves && isUserMooves)
+      return makeATurn(takeAMove(availableUserMooves) || getRandomMoveNextToClicked(circles, gridSizeX));
+
+    // 3.
+    if (isPcMooves && !isUserMooves)
+      return makeATurn(takeAMove(availablePcMooves) || getRandomMoveNextToClicked(circles, gridSizeX));
+
+    // 4.
+    const priorityMooves = [1, 2];
+
+    for (let index = 0; index < priorityMooves.length; index++) {
+      const priority = priorityMooves[index];
+
+      const priorityPcMooves = availablePcMooves.filter((turn) => turn?.surroundedBy?.length === priority);
+
+      if (priorityPcMooves.length) {
+        return makeATurn(priorityPcMooves[0].surroundedBy[0].index);
+      }
+
+      const priorityUserMooves = availableUserMooves.filter(
+        (turn) => turn?.surroundedBy?.length === priority
+      );
+
+      if (priorityUserMooves.length) {
+        return makeATurn(priorityUserMooves[0].surroundedBy[0].index);
+      }
     }
 
-    makeATurn(
-      possibleTurns
-        .filter((turn) => turn?.surroundedBy?.length)
-        .reduce((acc, possibleTurn) => {
-          if (!possibleTurn) return acc;
-          if (!possibleTurn.surroundedBy.length) return acc;
-
-          if (possibleTurn?.surroundedBy?.length < acc?.surroundedBy?.length) return possibleTurn;
-
-          return acc;
-        }).surroundedBy[0].index ?? getRandomMove(circles)
-    );
+    // 00.
+    return makeATurn(takeAMove(availablePcMooves) || getRandomMoveNextToClicked(circles, gridSizeX));
   }, [isPlayerA]);
-
-  /*   console.log(".....................................surrounded ", surrounded); */
 
   return { computersMove, setComputersMove, makeATurn, isPlayerA, isShowIndex, is_vs_pc };
 }

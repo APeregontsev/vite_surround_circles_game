@@ -44,8 +44,7 @@ export const GameArea = ({}: PropsWithChildren<Props>) => {
   const { isVisible } = useBlink({ computersMove, isPlayerA });
 
   //---------------------------------------------------
-  /* 
-  console.log(".....................................pathToDraw ***", pathToDraw); */
+  /* console.log(".....................................pathToDraw ***", pathToDraw); */
 
   return (
     <div className="canvas-wrapper" ref={canvasRef}>
@@ -53,8 +52,6 @@ export const GameArea = ({}: PropsWithChildren<Props>) => {
         <Layer>
           {React.useMemo(() => {
             return circles.map((item, index) => {
-              if (index === 0) console.log("Render >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-
               return (
                 <React.Fragment key={index}>
                   <Circle

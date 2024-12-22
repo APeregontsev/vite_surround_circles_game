@@ -414,6 +414,129 @@ export function isCanBeSurroundedRecursive({
   return allSurrounded;
 }
 
+export function isCanBeSurroundedRecursive2({
+  circles,
+  gridSizeX,
+  activePlayerColor,
+  index,
+  checked,
+  surroundedBy,
+  prevIndex,
+  depth = 1,
+  checkedTemp,
+  failedCheck,
+}: TRecursiveSurround) {
+  // Lets do early return if circle leads to out of bounds
+  if (failedCheck.has(index)) return false;
+
+  // Lets exit if already checked this circle
+  if (checkedTemp.has(index)) return true;
+
+  // Lets limit depth of the rersion until better algorithm is applied
+  /*   console.log("..........................................DEPTH", depth); */
+  if (depth >= 60) {
+    return true;
+  }
+
+  const col = index % gridSizeX;
+  /* 
+  console.log(`1_inside_recursion__${index}____prevIndex`, prevIndex);
+  console.log(`2_inside_recursion__${index}____index`, index); */
+
+  let preNeighbors = [
+    index - 1, // left
+    index + 1, // right
+    index - gridSizeX, // top
+    index + gridSizeX, // bottom
+  ];
+
+  let neighbors = [];
+
+  /*   console.log(`3_inside_recursion__${index}____preNeighbors`, preNeighbors) */ if (!preNeighbors.length)
+    return false;
+
+  if (prevIndex) {
+    preNeighbors = preNeighbors.filter((x) => x !== prevIndex);
+  }
+
+  for (const neighborIndex of preNeighbors) {
+    if (!checkedTemp.has(neighborIndex)) {
+      neighbors.push(neighborIndex);
+    }
+  }
+
+  /*   neighbors = [...preNeighbors]; */
+
+  // Out of bounds
+  for (const neighborIndex of neighbors) {
+    if (
+      neighborIndex < 0 ||
+      neighborIndex >= circles.length || // Out of bounds
+      (neighborIndex % gridSizeX === 0 && col === gridSizeX - 1) || // Right edge case
+      (neighborIndex % gridSizeX === gridSizeX - 1 && col === 0) // Left edge case
+    ) {
+      return false;
+    }
+  }
+
+  let allSurrounded = true;
+
+  /*   console.log(`4.0_!!!!!!!!!___neighbors_checked`, checked);
+  console.log(`4_!!!!!!!!!___neighbors`, neighbors); */
+
+  for (const neighborIndex of neighbors) {
+    const neighbor = circles[neighborIndex];
+
+    /*   console.log(`5_inside_neighbors__${neighborIndex}____neighbor`); */
+
+    if (
+      (neighbor.fillColor === palette.grey || neighbor.fillColor === palette.blue) &&
+      !neighbor.isSurrounded
+    ) {
+      if (neighbor.fillColor === palette.grey) surroundedBy.add(neighbor);
+
+      continue;
+    }
+
+    if (
+      !isCanBeSurroundedRecursive2({
+        circles,
+        gridSizeX,
+        activePlayerColor,
+        index: neighborIndex,
+        checked,
+        surroundedBy,
+        prevIndex: index,
+        depth: depth + 1,
+        checkedTemp,
+        failedCheck,
+      })
+    ) {
+      /*       console.log(`6_allSurrounded___FALSE__${neighborIndex}`); */
+      checked.add(neighborIndex);
+      allSurrounded = false;
+      failedCheck.add(neighborIndex);
+
+      break;
+    }
+
+    // Lets add circles to checked arr not to calc turns on them
+    if (neighbor.fillColor === palette.red && !neighbor.isSurrounded) {
+      checkedTemp.add(neighborIndex);
+      checkedTemp.add(index);
+    }
+
+    if (
+      (neighbor.fillColor === palette.blue || neighbor.fillColor === palette.grey) &&
+      neighbor.isSurrounded
+    ) {
+      checkedTemp.add(neighborIndex);
+    }
+  }
+
+  return allSurrounded;
+}
+
 export function getRandomMove(circles: TCircle[]) {
   const filteredCircles = circles.filter(
     (dot) => !dot.isClicked && !dot.isSurrounded && dot.fillColor === palette.grey
@@ -429,4 +552,77 @@ export function getRandomMove(circles: TCircle[]) {
   const selectedDot = filteredCircles[randomIndex];
 
   return selectedDot.index;
+}
+
+// Enhanced random move
+export function getRandomMoveNextToClicked(circles: TCircle[], gridSizeX: number) {
+  const filteredCircles = circles.filter(
+    (dot) => dot.isClicked && !dot.isSurrounded && dot.fillColor !== palette.grey
+  );
+
+  if (filteredCircles.length === 0) {
+    return 0;
+  }
+
+  // Pick a random dot from the filtered circles
+  function checkFreeNeighbour() {
+    const randomIndex = Math.floor(Math.random() * filteredCircles.length);
+    const selectedDotIndex = filteredCircles[randomIndex]?.index;
+
+    const col = selectedDotIndex % gridSizeX;
+
+    let preNeighbors = [
+      selectedDotIndex - 1, // left
+      selectedDotIndex + 1, // right
+      selectedDotIndex - gridSizeX, // top
+      selectedDotIndex + gridSizeX, // bottom
+    ];
+
+    let neighbors = [];
+
+    for (const neighborIndex of preNeighbors) {
+      if (
+        neighborIndex < 0 ||
+        neighborIndex >= circles.length || // Out of bounds
+        (neighborIndex % gridSizeX === 0 && col === gridSizeX - 1) || // Right edge case
+        (neighborIndex % gridSizeX === gridSizeX - 1 && col === 0) // Left edge case
+      ) {
+        continue;
+      }
+
+      neighbors.push(neighborIndex);
+    }
+
+    for (const neighborIndex of neighbors) {
+      const neighbor = circles[neighborIndex];
+
+      if (!neighbor) continue;
+
+      if (neighbor.fillColor === palette.grey && !neighbor.isSurrounded) {
+        return neighbor.index;
+      }
+    }
+
+    return checkFreeNeighbour();
+  }
+
+  const proposedMove = checkFreeNeighbour();
+
+  return proposedMove ?? 0;
+}
+
+export function takeAMove(
+  movesArray: {
+    checkedIndex: number;
+    surroundedBy: TCircle[];
+  }[]
+) {
+  return movesArray.reduce((acc, possibleTurn) => {
+    if (!possibleTurn) return acc;
+    if (!possibleTurn.surroundedBy.length) return acc;
+
+    if (possibleTurn?.surroundedBy?.length < acc?.surroundedBy?.length) return possibleTurn;
+
+    return acc;
+  }).surroundedBy[0].index;
 }
