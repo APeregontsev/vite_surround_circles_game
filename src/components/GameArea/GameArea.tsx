@@ -96,9 +96,6 @@ export const GameArea = ({}: PropsWithChildren<Props>) => {
           {React.useMemo(() => {
             if (pathToDraw.length > 0)
               return pathToDraw.map(({ color, path }, index) => {
-                if (index === 0)
-                  console.log("Render___PATH >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-
                 const pathToDraw = path.reduce((acc, item) => {
                   acc.push(item.x);
                   acc.push(item.y);
