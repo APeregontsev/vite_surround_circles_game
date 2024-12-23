@@ -29,17 +29,38 @@
   }
 
   &.text {
+    padding: 5px 10px !important;
     color: var(--Grey);
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
     line-height: 150%;
     padding: 0px;
-    border-radius: 0px;
+    border-radius: 8px;
     background: none;
+    transition: all 0.3s ease-in-out;
+    color: var(--Blue) !important;
+    fill: var(--Blue);
+    stroke: var(--Blue);
+
+    &:disabled {
+      background: none;
+      opacity: 1;
+      cursor: default;
+      color: var(--Light-blue) !important;
+      fill: var(--Light-blue);
+      stroke: var(--Light-blue);
+
+      &:hover {
+        background: none;
+        stroke: var(--Light-blue);
+      }
+    }
 
     &:hover {
-      color: var(--Dark-grey);
+      background: none;
+      stroke: var(--Red);
+      border-radius: 8px;
     }
   }
 
@@ -99,7 +120,7 @@
     justify-content: center;
     border-radius: 50%;
 
-    span {
+    div {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -211,4 +232,12 @@
       background-position: center center;
     }
   }
+}
+
+.btn-inner-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }

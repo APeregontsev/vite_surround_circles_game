@@ -6,6 +6,7 @@ type TButton = {
   outlined?: boolean;
   fullwidth?: boolean;
   icon?: boolean;
+  text?: boolean;
   info?: boolean;
   active?: boolean;
   purple?: boolean;
@@ -21,6 +22,7 @@ export const Button = ({
   info,
   purple,
   active,
+  text,
   ...rest
 }: PropsWithChildren<TypeButton>) => {
   return (
@@ -33,9 +35,10 @@ export const Button = ({
         info: info,
         active: active,
         purple: purple,
+        text: text,
       })}
     >
-      <span>{children}</span>
+      <div className="btn-inner-wrapper">{children}</div>
     </button>
   );
 };

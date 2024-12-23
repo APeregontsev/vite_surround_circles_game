@@ -28,6 +28,11 @@ a {
   text-decoration: none;
 }
 
+a:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
 img {
   vertical-align: top;
 }
@@ -66,6 +71,7 @@ body {
 :root {
   --Blue: #1475da;
   --Blue-hover: #1475da94;
+  --Blue-dark: #0063c9;
   --Light-blue: #bccee973;
   --Red: #da0d52;
   --Light-red: #da0d529e;
@@ -76,6 +82,8 @@ body {
   --White: #ffffff;
 }
 
+/* #86c1ff7a
+ */
 #root {
   display: flex;
   justify-content: center;

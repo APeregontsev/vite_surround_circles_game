@@ -10,4 +10,5 @@ export * from "./PlayerStat/PlayerStat.tsx";
 export * from "./PlayerStatCard/PlayerStatCard.tsx";
 export * from "./Rules/Rules.tsx";
 export * from "./Statistics/Statistics.tsx";
+export * from "./Stepper/Stepper.tsx";
 export * from "./Timer/Timer.tsx";

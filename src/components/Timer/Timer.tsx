@@ -37,7 +37,7 @@ export const Timer = ({}: Props) => {
 
   return (
     <div className="menu-item">
-      <Button title="Show indexes" onClick={handleShowIndexes} info active={isShowIndex}>
+      <Button info title="Show indexes" onClick={handleShowIndexes} active={isShowIndex}>
         i
       </Button>
       <Button icon title="Toggle stopwatch" onClick={handleToggleTimer}>

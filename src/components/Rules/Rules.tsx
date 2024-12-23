@@ -1,43 +1,27 @@
-import steps from "src/assets/steps.png";
+import React, { ReactElement } from "react";
 import { Button } from "src/ui";
+import { Stepper } from "../Stepper/Stepper";
+import { Steps } from "./Sections/Steps";
+import { Surround } from "./Sections/Surround";
+import { Victory } from "./Sections/Victory";
 import "./styles.scss";
 
 type Props = { toggleRules: () => void };
 
 export const Rules = ({ toggleRules }: Props) => {
+  const [activeStep, setActiveStep] = React.useState<number>(1);
+
+  const rulesCards: Record<number, ReactElement> = { 1: <Steps />, 2: <Surround />, 3: <Victory /> };
+
+  const stepsCount = Object.keys(rulesCards ?? {}).length;
+
   return (
     <div className="rules-wrapper">
       <h1 style={{ textAlign: "center" }}>RULES</h1>
-      <div>
-        <img src={steps} alt="alt_steps" className="rules-img" />
-      </div>
 
-      <section>
-        <ul className="rules-list">
-          <li className="rules-list-item">
-            <div
-              style={{
-                minWidth: "12px",
-                minHeight: "12px",
-                borderRadius: "50%",
-                backgroundColor: "var(--Red)",
-              }}
-            ></div>
-            <p>You need to surround your opponent's dots;</p>
-          </li>
-          <li className="rules-list-item">
-            <div
-              style={{
-                minWidth: "12px",
-                minHeight: "12px",
-                borderRadius: "50%",
-                backgroundColor: "var(--Blue)",
-              }}
-            ></div>
-            <p>The winner is the one who surrounds more dots;</p>
-          </li>
-        </ul>
-      </section>
+      {rulesCards[activeStep]}
+
+      <Stepper steps={stepsCount} currentStep={activeStep} setActiveStep={setActiveStep} />
       <Button fullwidth type="submit" onClick={toggleRules}>
         Ok
       </Button>

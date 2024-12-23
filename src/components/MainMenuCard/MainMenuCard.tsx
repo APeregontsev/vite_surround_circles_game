@@ -51,7 +51,12 @@ export const MainMenuCard = ({}: PropsWithChildren<Props>) => {
             Statistics
           </Button>
         </div>
-        <div className="copyright">© {currentYear}, APeregontsev</div>
+        <div className="copyright">
+          © {currentYear},{" "}
+          <a className="author-link" href="https://linkedin.com/in/alexander-peregontsev/">
+            APeregontsev
+          </a>
+        </div>
       </div>
       {showStat && (
         <Modal toggleModal={toggleStat}>

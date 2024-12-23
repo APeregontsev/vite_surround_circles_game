@@ -1,0 +1,43 @@
+.step-styles {
+  width: 16px;
+  height: 4px;
+  border-radius: 4px;
+  background-color: var(--Light-blue);
+
+  &.active {
+    background-color: var(--Blue);
+  }
+}
+
+.stepper-wrapper-styles {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 550px;
+  margin: 16px auto;
+}
+
+.stepper-btn-wrapper:first-of-type {
+  min-width: 72px;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.stepper-btn-wrapper:last-of-type {
+  min-width: 72px;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.steps-wrapper-styles {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}

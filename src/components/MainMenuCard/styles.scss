@@ -21,3 +21,11 @@
   width: 100%;
   font-size: 12px;
 }
+
+.author-link {
+  text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
+}

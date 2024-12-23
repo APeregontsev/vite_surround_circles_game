@@ -2,23 +2,36 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%;
 }
 
 .rules-img {
   width: 100%;
   height: auto;
+  border-radius: 10px;
 }
 
 .rules-list {
   list-style: none;
   padding: 0;
-  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 70px;
 }
 
 .rules-list-item {
   display: flex;
   flex-direction: row;
   gap: 10px;
-  align-items: center;
-  margin-bottom: 20px;
+  align-items: baseline;
+  /*   margin-bottom: 20px; */
+}
+
+.rules-img-wrapper {
+  height: 120px;
+
+  @media (max-width: 500px) {
+    height: auto;
+  }
 }
