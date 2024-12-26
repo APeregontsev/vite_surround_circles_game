@@ -31,7 +31,12 @@ export type TRecursiveCheck = {
   depth?: number;
 };
 
-export type TRecursiveSurround = TRecursiveCheck & { checkedTemp: Set<number>; failedCheck: Set<number> };
+export type TRecursiveSurround = Omit<TRecursiveCheck, "activePlayerColor"> & {
+  checkedTemp: Set<number>;
+  failedCheck: Set<number>;
+  checkingColor: string;
+  surroundingColor: string;
+};
 
 export type TPreRecursiveCheck = {
   circles: TCircle[];
@@ -48,5 +53,12 @@ export type TDrawPath = {
 export type TNotConnectedSurrounding = {
   surroundingArray: TCircle[];
   checkedArray: Set<number>;
+  gridSizeX: number;
+};
+
+export type TGameData = {
+  circles: TCircle[];
+  allyColor: string;
+  enemyColor: string;
   gridSizeX: number;
 };

@@ -4,10 +4,10 @@ import { TGameType, useStore } from "src/store/store";
 import {
   drawPath,
   getRandomMoveNextToClicked,
+  getSafeIndexForMove,
   isCanBeSurroundedRecursive,
-  isCanBeSurroundedRecursive2,
   isSurroundedRecursive,
-  takeAMove,
+  takeAMoveOnShortestPath,
 } from "./helpers";
 import { TCircle, TPath } from "./types";
 
@@ -125,22 +125,22 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
 
     for (let i = startOfRange; i <= endOfRange; i++) {
       const surroundedBy = new Set<TCircle>();
-
       const checkedTemp = new Set<number>();
 
       if (
-        circles[i].fillColor === palette.blue &&
+        circles[i].fillColor === secondaryPlayerColor &&
         !circles[i].isSurrounded &&
         !checked.has(i) &&
         isCanBeSurroundedRecursive({
           circles,
           gridSizeX,
-          activePlayerColor,
           index: i,
           checked,
           surroundedBy,
           checkedTemp,
           failedCheck,
+          checkingColor: secondaryPlayerColor,
+          surroundingColor: activePlayerColor,
         })
       ) {
         // Lets merge checked circles if they can be surrounded, otherwise ignore them
@@ -150,7 +150,7 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
       }
     }
 
-    //-------------------------------------------------------------------------------------
+    // Possible user turns-------------------------------------------------------------------------------------
 
     const possibleUserMooves: { checkedIndex: number; surroundedBy: TCircle[] }[] = [];
 
@@ -163,18 +163,19 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
         const checkedTemp = new Set<number>();
 
         if (
-          circles[i].fillColor === palette.red &&
+          circles[i].fillColor === activePlayerColor &&
           !circles[i].isSurrounded &&
           !checked.has(i) &&
-          isCanBeSurroundedRecursive2({
+          isCanBeSurroundedRecursive({
             circles,
             gridSizeX,
-            activePlayerColor,
             index: i,
             checked,
             surroundedBy,
             checkedTemp,
             failedCheck,
+            checkingColor: activePlayerColor,
+            surroundingColor: secondaryPlayerColor,
           })
         ) {
           // Lets merge checked circles if they can be surrounded, otherwise ignore them
@@ -184,10 +185,10 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
         }
       }
     }
-    /*     console.log("user_turn.............................setTurn<<<<<<<<<<<<<<<<<<<<", possibleUserMooves);
-    console.log("pc_turn.............................setTurn<<<<<<<<<<<<<<<<<<<<", possiblePcMooves); */
+    console.log("user_turn.............................setTurn<<<<<<<<<<<<<<<<<<<<", possibleUserMooves);
+    console.log("pc_turn.............................setTurn<<<<<<<<<<<<<<<<<<<<", possiblePcMooves);
 
-    //-------------------------------------------------------------------------------------
+    // Evaluating-------------------------------------------------------------------------------------
 
     const availablePcMooves = possiblePcMooves.filter((turn) => turn?.surroundedBy?.length);
     const availableUserMooves = possibleUserMooves.filter((turn) => turn?.surroundedBy?.length);
@@ -196,15 +197,39 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
     const isUserMooves = possibleUserMooves.length && availableUserMooves.length;
 
     // 1.
-    if (!isPcMooves && !isUserMooves) return makeATurn(getRandomMoveNextToClicked(circles, gridSizeX));
+    if (!isPcMooves && !isUserMooves) {
+      console.log("1___makeATurn");
+      return makeATurn(getRandomMoveNextToClicked(circles, gridSizeX));
+    }
 
     // 2.
-    if (!isPcMooves && isUserMooves)
-      return makeATurn(takeAMove(availableUserMooves) || getRandomMoveNextToClicked(circles, gridSizeX));
+    if (!isPcMooves && isUserMooves) {
+      console.log("2___makeATurn");
+      return makeATurn(
+        takeAMoveOnShortestPath({
+          movesArray: availableUserMooves,
+          circles,
+          allyColor: activePlayerColor,
+          enemyColor: secondaryPlayerColor,
+          gridSizeX,
+        }) || getRandomMoveNextToClicked(circles, gridSizeX)
+      );
+    }
 
     // 3.
-    if (isPcMooves && !isUserMooves)
-      return makeATurn(takeAMove(availablePcMooves) || getRandomMoveNextToClicked(circles, gridSizeX));
+    if (isPcMooves && !isUserMooves) {
+      console.log("3___makeATurn");
+
+      return makeATurn(
+        takeAMoveOnShortestPath({
+          movesArray: availablePcMooves,
+          circles,
+          allyColor: activePlayerColor,
+          enemyColor: secondaryPlayerColor,
+          gridSizeX,
+        }) || getRandomMoveNextToClicked(circles, gridSizeX)
+      );
+    }
 
     // 4.
     const priorityMooves = [1, 2];
@@ -215,7 +240,16 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
       const priorityPcMooves = availablePcMooves.filter((turn) => turn?.surroundedBy?.length === priority);
 
       if (priorityPcMooves.length) {
-        return makeATurn(priorityPcMooves[0].surroundedBy[0].index);
+        console.log("4___makeATurn___PC");
+        return makeATurn(
+          getSafeIndexForMove({
+            circles,
+            proposedMoves: priorityPcMooves[0].surroundedBy,
+            allyColor: activePlayerColor,
+            enemyColor: secondaryPlayerColor,
+            gridSizeX,
+          })
+        );
       }
 
       const priorityUserMooves = availableUserMooves.filter(
@@ -223,12 +257,31 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
       );
 
       if (priorityUserMooves.length) {
-        return makeATurn(priorityUserMooves[0].surroundedBy[0].index);
+        console.log("4___makeATurn__USER");
+
+        return makeATurn(
+          getSafeIndexForMove({
+            circles,
+            proposedMoves: priorityUserMooves[0].surroundedBy,
+            allyColor: activePlayerColor,
+            enemyColor: secondaryPlayerColor,
+            gridSizeX,
+          })
+        );
       }
     }
 
     // 00.
-    return makeATurn(takeAMove(availablePcMooves) || getRandomMoveNextToClicked(circles, gridSizeX));
+    console.log("5___makeATurn");
+    return makeATurn(
+      takeAMoveOnShortestPath({
+        movesArray: availablePcMooves,
+        circles,
+        allyColor: activePlayerColor,
+        enemyColor: secondaryPlayerColor,
+        gridSizeX,
+      }) || getRandomMoveNextToClicked(circles, gridSizeX)
+    );
   }, [isPlayerA]);
 
   return { computersMove, setComputersMove, makeATurn, isPlayerA, isShowIndex, is_vs_pc };

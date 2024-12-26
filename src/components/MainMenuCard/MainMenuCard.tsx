@@ -53,7 +53,7 @@ export const MainMenuCard = ({}: PropsWithChildren<Props>) => {
         </div>
         <div className="copyright">
           © {currentYear},{" "}
-          <a className="author-link" href="https://linkedin.com/in/alexander-peregontsev/">
+          <a className="author-link" href="">
             APeregontsev
           </a>
         </div>

@@ -3,6 +3,7 @@ import {
   TCircle,
   TCreateCircle,
   TDrawPath,
+  TGameData,
   TNotConnectedSurrounding,
   TPreRecursiveCheck,
   TRecursiveCheck,
@@ -294,7 +295,6 @@ function distance({ point1, point2 }: TDistance) {
 export function isCanBeSurroundedRecursive({
   circles,
   gridSizeX,
-  activePlayerColor,
   index,
   checked,
   surroundedBy,
@@ -302,6 +302,8 @@ export function isCanBeSurroundedRecursive({
   depth = 1,
   checkedTemp,
   failedCheck,
+  surroundingColor,
+  checkingColor,
 }: TRecursiveSurround) {
   // Lets do early return if circle leads to out of bounds
   if (failedCheck.has(index)) return false;
@@ -367,7 +369,7 @@ export function isCanBeSurroundedRecursive({
     /*   console.log(`5_inside_neighbors__${neighborIndex}____neighbor`); */
 
     if (
-      (neighbor.fillColor === palette.grey || neighbor.fillColor === palette.red) &&
+      (neighbor.fillColor === palette.grey || neighbor.fillColor === surroundingColor) &&
       !neighbor.isSurrounded
     ) {
       if (neighbor.fillColor === palette.grey) surroundedBy.add(neighbor);
@@ -379,7 +381,6 @@ export function isCanBeSurroundedRecursive({
       !isCanBeSurroundedRecursive({
         circles,
         gridSizeX,
-        activePlayerColor,
         index: neighborIndex,
         checked,
         surroundedBy,
@@ -387,6 +388,8 @@ export function isCanBeSurroundedRecursive({
         depth: depth + 1,
         checkedTemp,
         failedCheck,
+        surroundingColor,
+        checkingColor,
       })
     ) {
       /*       console.log(`6_allSurrounded___FALSE__${neighborIndex}`); */
@@ -398,136 +401,13 @@ export function isCanBeSurroundedRecursive({
     }
 
     // Lets add circles to checked arr not to calc turns on them
-    if (neighbor.fillColor === palette.blue && !neighbor.isSurrounded) {
+    if (neighbor.fillColor === checkingColor && !neighbor.isSurrounded) {
       checkedTemp.add(neighborIndex);
       checkedTemp.add(index);
     }
 
     if (
-      (neighbor.fillColor === palette.red || neighbor.fillColor === palette.grey) &&
-      neighbor.isSurrounded
-    ) {
-      checkedTemp.add(neighborIndex);
-    }
-  }
-
-  return allSurrounded;
-}
-
-export function isCanBeSurroundedRecursive2({
-  circles,
-  gridSizeX,
-  activePlayerColor,
-  index,
-  checked,
-  surroundedBy,
-  prevIndex,
-  depth = 1,
-  checkedTemp,
-  failedCheck,
-}: TRecursiveSurround) {
-  // Lets do early return if circle leads to out of bounds
-  if (failedCheck.has(index)) return false;
-
-  // Lets exit if already checked this circle
-  if (checkedTemp.has(index)) return true;
-
-  // Lets limit depth of the rersion until better algorithm is applied
-  /*   console.log("..........................................DEPTH", depth); */
-  if (depth >= 60) {
-    return true;
-  }
-
-  const col = index % gridSizeX;
-  /* 
-  console.log(`1_inside_recursion__${index}____prevIndex`, prevIndex);
-  console.log(`2_inside_recursion__${index}____index`, index); */
-
-  let preNeighbors = [
-    index - 1, // left
-    index + 1, // right
-    index - gridSizeX, // top
-    index + gridSizeX, // bottom
-  ];
-
-  let neighbors = [];
-
-  /*   console.log(`3_inside_recursion__${index}____preNeighbors`, preNeighbors) */ if (!preNeighbors.length)
-    return false;
-
-  if (prevIndex) {
-    preNeighbors = preNeighbors.filter((x) => x !== prevIndex);
-  }
-
-  for (const neighborIndex of preNeighbors) {
-    if (!checkedTemp.has(neighborIndex)) {
-      neighbors.push(neighborIndex);
-    }
-  }
-
-  /*   neighbors = [...preNeighbors]; */
-
-  // Out of bounds
-  for (const neighborIndex of neighbors) {
-    if (
-      neighborIndex < 0 ||
-      neighborIndex >= circles.length || // Out of bounds
-      (neighborIndex % gridSizeX === 0 && col === gridSizeX - 1) || // Right edge case
-      (neighborIndex % gridSizeX === gridSizeX - 1 && col === 0) // Left edge case
-    ) {
-      return false;
-    }
-  }
-
-  let allSurrounded = true;
-
-  /*   console.log(`4.0_!!!!!!!!!___neighbors_checked`, checked);
-  console.log(`4_!!!!!!!!!___neighbors`, neighbors); */
-
-  for (const neighborIndex of neighbors) {
-    const neighbor = circles[neighborIndex];
-
-    /*   console.log(`5_inside_neighbors__${neighborIndex}____neighbor`); */
-
-    if (
-      (neighbor.fillColor === palette.grey || neighbor.fillColor === palette.blue) &&
-      !neighbor.isSurrounded
-    ) {
-      if (neighbor.fillColor === palette.grey) surroundedBy.add(neighbor);
-
-      continue;
-    }
-
-    if (
-      !isCanBeSurroundedRecursive2({
-        circles,
-        gridSizeX,
-        activePlayerColor,
-        index: neighborIndex,
-        checked,
-        surroundedBy,
-        prevIndex: index,
-        depth: depth + 1,
-        checkedTemp,
-        failedCheck,
-      })
-    ) {
-      /*       console.log(`6_allSurrounded___FALSE__${neighborIndex}`); */
-      checked.add(neighborIndex);
-      allSurrounded = false;
-      failedCheck.add(neighborIndex);
-
-      break;
-    }
-
-    // Lets add circles to checked arr not to calc turns on them
-    if (neighbor.fillColor === palette.red && !neighbor.isSurrounded) {
-      checkedTemp.add(neighborIndex);
-      checkedTemp.add(index);
-    }
-
-    if (
-      (neighbor.fillColor === palette.blue || neighbor.fillColor === palette.grey) &&
+      (neighbor.fillColor === surroundingColor || neighbor.fillColor === palette.grey) &&
       neighbor.isSurrounded
     ) {
       checkedTemp.add(neighborIndex);
@@ -578,7 +458,7 @@ export function getRandomMoveNextToClicked(circles: TCircle[], gridSizeX: number
       selectedDotIndex + gridSizeX, // bottom
     ];
 
-    let neighbors = [];
+    let neighbors: number[] = [];
 
     for (const neighborIndex of preNeighbors) {
       if (
@@ -611,18 +491,119 @@ export function getRandomMoveNextToClicked(circles: TCircle[], gridSizeX: number
   return proposedMove ?? 0;
 }
 
-export function takeAMove(
+export function takeAMoveOnShortestPath({
+  movesArray,
+  circles,
+  allyColor,
+  enemyColor,
+  gridSizeX,
+}: {
   movesArray: {
     checkedIndex: number;
     surroundedBy: TCircle[];
-  }[]
-) {
-  return movesArray.reduce((acc, possibleTurn) => {
+  }[];
+} & TGameData) {
+  const minPath = movesArray.reduce((acc, possibleTurn) => {
     if (!possibleTurn) return acc;
     if (!possibleTurn.surroundedBy.length) return acc;
 
     if (possibleTurn?.surroundedBy?.length < acc?.surroundedBy?.length) return possibleTurn;
 
     return acc;
-  }).surroundedBy[0].index;
+  });
+
+  return getSafeIndexForMove({
+    circles,
+    proposedMoves: minPath.surroundedBy,
+    allyColor,
+    enemyColor,
+    gridSizeX,
+  });
+}
+
+export function getSafeIndexForMove({
+  circles,
+  proposedMoves,
+  allyColor,
+  enemyColor,
+  gridSizeX,
+}: TGameData & { proposedMoves: TCircle[] }) {
+  if (proposedMoves.length === 1) return proposedMoves[0].index;
+
+  let otherFreeTurn: null | number = null;
+
+  for (let index = 0; index < proposedMoves.length; index++) {
+    const proposedMove = proposedMoves[index];
+
+    const { isAtRisk, freeTurn } = checkAtRisk({
+      circles,
+      index: proposedMove.index,
+      gridSizeX,
+      allyColor,
+      enemyColor,
+    });
+
+    if (!isAtRisk) return proposedMoves[index].index;
+    if (freeTurn) otherFreeTurn = freeTurn;
+  }
+
+  if (otherFreeTurn) return otherFreeTurn;
+
+  // Lets add return for possible edge cases
+  return proposedMoves[0].index;
+}
+
+export function checkAtRisk({
+  circles,
+  index,
+  gridSizeX,
+  allyColor,
+  enemyColor,
+}: TGameData & { index: number }): {
+  isAtRisk: boolean;
+  freeTurn: number | null;
+} {
+  let isAtRisk = false;
+  let freeTurn: null | number = null;
+
+  let neighbourAlly = false;
+  let neighbourEnemyCount = 0;
+
+  let neighbors = [
+    index - 1, // left
+    index + 1, // right
+    index - gridSizeX, // top
+    index + gridSizeX, // bottom
+  ];
+
+  for (const neighborIndex of neighbors) {
+    const neighbor = circles[neighborIndex];
+
+    // If move is out of bounds
+    if (!neighbor) continue;
+
+    // Lets save as possible safe move
+    if (neighbor.fillColor === palette.grey) freeTurn = neighbor.index;
+
+    // Cant be surrounded by the enemy
+    if (neighbor.fillColor === allyColor) {
+      neighbourAlly = true;
+      break;
+    }
+
+    if (neighbor.fillColor === enemyColor) {
+      neighbourEnemyCount++;
+      continue;
+    }
+  }
+
+  // Lets cals if move is at risk
+
+  if (neighbourAlly) {
+    return { isAtRisk: false, freeTurn };
+  }
+
+  if (neighbourEnemyCount === 4 || neighbourEnemyCount === 3) isAtRisk = true;
+
+  return { isAtRisk, freeTurn };
 }
