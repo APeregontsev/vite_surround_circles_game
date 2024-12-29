@@ -1,9 +1,8 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import { Button } from "src/ui";
 import { Stepper } from "../Stepper/Stepper";
-import { Steps } from "./Sections/Steps";
-import { Surround } from "./Sections/Surround";
-import { Victory } from "./Sections/Victory";
+import { RULES_CONFIG } from "./config";
+import { RuleCard } from "./RuleCard";
 import "./styles.scss";
 
 type Props = { toggleRules: () => void };
@@ -11,15 +10,13 @@ type Props = { toggleRules: () => void };
 export const Rules = ({ toggleRules }: Props) => {
   const [activeStep, setActiveStep] = React.useState<number>(1);
 
-  const rulesCards: Record<number, ReactElement> = { 1: <Steps />, 2: <Surround />, 3: <Victory /> };
-
-  const stepsCount = Object.keys(rulesCards ?? {}).length;
+  const stepsCount = Object.keys(RULES_CONFIG ?? {}).length;
 
   return (
     <div className="rules-wrapper">
       <h1 style={{ textAlign: "center" }}>RULES</h1>
 
-      {rulesCards[activeStep]}
+      <RuleCard rule={RULES_CONFIG[activeStep]} />
 
       <Stepper steps={stepsCount} currentStep={activeStep} setActiveStep={setActiveStep} />
       <Button fullwidth type="submit" onClick={toggleRules}>

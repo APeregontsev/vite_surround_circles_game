@@ -8,7 +8,7 @@ export const Statistics = ({ toggleStat }: Props) => {
     <div className="stat-wrapper">
       <h1 style={{ textAlign: "center" }}>Statistics</h1>
 
-      <section>Under development . . . </section>
+      <section>No data . . . </section>
 
       <Button fullwidth type="submit" onClick={toggleStat}>
         Ok

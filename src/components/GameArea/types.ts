@@ -62,3 +62,9 @@ export type TGameData = {
   enemyColor: string;
   gridSizeX: number;
 };
+
+export type TBroodforce = {
+  direction?: "R" | "L" | "T" | "B";
+  count?: number;
+  prevUserMove?: number | null;
+};

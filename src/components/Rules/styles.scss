@@ -28,6 +28,13 @@
   /*   margin-bottom: 20px; */
 }
 
+.rule-item {
+  min-width: 12px;
+  min-height: 12px;
+  border-radius: 50%;
+  background-color: var(--Red);
+}
+
 .rules-img-wrapper {
   height: 120px;
 

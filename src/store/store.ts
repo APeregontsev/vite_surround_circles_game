@@ -28,6 +28,7 @@ export type TSettings = {
   setPlayerB: (name: string) => void;
 
   toggleTimer: () => void;
+  setTimerPause: (isPaused: boolean) => void;
 };
 
 export type TGame = {
@@ -63,6 +64,7 @@ export const useSettings = createWithEqualityFn<TSettings>(
     setPlayerB: (name) => set({ playerB: name }),
 
     toggleTimer: () => set({ isTimerActive: !get().isTimerActive }),
+    setTimerPause: (isPaused: boolean) => set({ isPaused: isPaused }),
   }),
   shallow
 );

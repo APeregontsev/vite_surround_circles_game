@@ -1,3 +1,4 @@
+export * from "./ConfirmCard/ConfirmCard.tsx";
 export * from "./GameArea/GameArea.tsx";
 export * from "./GamePage/GamePage.tsx";
 export * from "./InGameMenu/InGameMenu.tsx";

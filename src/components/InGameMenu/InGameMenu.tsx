@@ -3,7 +3,7 @@ import React, { PropsWithChildren } from "react";
 import { palette } from "src/constants/constants";
 import { RouteTypes, useSettings, useStore } from "src/store/store";
 import { Button } from "src/ui";
-import { Modal } from "..";
+import { ConfirmCard, Modal } from "..";
 import "./styles.scss";
 
 type Props = {};
@@ -11,60 +11,89 @@ type Props = {};
 export const InGameMenu = ({}: PropsWithChildren<Props>) => {
   const navigate = useSettings((state) => state.navigate);
 
-  const { toggleTimer } = useSettings((state) => ({
+  const { setTimerPause, isTimerPaused, isTimerActive } = useSettings((state) => ({
     toggleTimer: state.toggleTimer,
+    setTimerPause: state.setTimerPause,
+    isTimerPaused: state.isPaused,
+    isTimerActive: state.isTimerActive,
   }));
 
   const reset = useStore((state) => state.resetGame);
 
-  const [isPaused, setIsPaused] = React.useState<boolean>(false);
+  const [gameState, setGameState] = React.useState<"pause" | "reset" | "finish" | null>(null);
 
-  function navigateMainMenu() {
-    navigate(RouteTypes.M_MENU);
+  function openModal(gameState: "pause" | "reset" | "finish") {
+    setGameState(gameState);
+
+    if (isTimerActive) setTimerPause(true);
+  }
+
+  function toggleModal() {
+    setGameState(null);
+
+    if (isTimerActive && isTimerPaused) setTimerPause(false);
   }
 
   function handleReset() {
     reset();
+    setGameState(null);
   }
 
-  function togglePause() {
-    setIsPaused((state) => !state);
-    toggleTimer();
-  }
-
-  function toggleReset() {
+  function handleFinish() {
+    navigate(RouteTypes.M_MENU);
     reset();
-    setIsPaused((state) => !state);
-    toggleTimer();
   }
 
   return (
     <div className="menu-item">
-      <Button icon title="Reset game" onClick={handleReset}>
+      <Button icon title="Reset game" onClick={() => openModal("reset")}>
         <RotateCcw color={palette.blue} />
       </Button>
-      <Button icon title="Pause game" onClick={togglePause}>
+      <Button icon title="Pause game" onClick={() => openModal("pause")}>
         <CirclePause color={palette.blue} />
       </Button>
 
-      <Button icon title="Finish game" onClick={navigateMainMenu}>
+      <Button icon title="Finish game" onClick={() => openModal("finish")}>
         <Flag color={palette.red} />
       </Button>
 
-      {isPaused && (
-        <Modal toggleModal={togglePause}>
-          <div className="pause-wrapper">
-            <h1 style={{ textAlign: "center", marginBottom: "40px" }}>Paused</h1>
-            <div className="btn-wrapper">
-              <Button outlined fullwidth onClick={toggleReset} type="reset">
-                Reset
-              </Button>
+      {gameState && (
+        <Modal toggleModal={toggleModal}>
+          {gameState === "pause" && (
+            <ConfirmCard
+              title="Paused"
+              subTitle="Game is paused."
+              onCancel={handleReset}
+              onConfirm={toggleModal}
+              onCancelText="Reset"
+              onConfirmText="Resume"
+              cancelRed
+            />
+          )}
 
-              <Button fullwidth type="submit" onClick={togglePause}>
-                Resume
-              </Button>
-            </div>
-          </div>
+          {gameState === "reset" && (
+            <ConfirmCard
+              title="Reset game"
+              subTitle="Are you sure you want to reset the game?"
+              onCancel={toggleModal}
+              onConfirm={handleReset}
+              onCancelText="Cancel"
+              onConfirmText="Reset"
+              confirmRed
+            />
+          )}
+
+          {gameState === "finish" && (
+            <ConfirmCard
+              title="Finish game"
+              subTitle="Are you sure you want to finish the game?"
+              onCancel={toggleModal}
+              onConfirm={handleFinish}
+              onCancelText="Cancel"
+              onConfirmText="Finish"
+              confirmRed
+            />
+          )}
         </Modal>
       )}
     </div>

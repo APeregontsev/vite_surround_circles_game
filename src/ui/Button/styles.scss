@@ -28,6 +28,12 @@
     cursor: default;
   }
 
+  &:focus-visible,
+  :focus-within,
+  :focus {
+    outline-color: var(--Blue);
+  }
+
   &.text {
     padding: 5px 10px !important;
     color: var(--Grey);

@@ -1,5 +1,6 @@
 import { palette } from "src/constants/constants";
 import {
+  TBroodforce,
   TCircle,
   TCreateCircle,
   TDrawPath,
@@ -9,6 +10,7 @@ import {
   TRecursiveCheck,
   TRecursiveSurround,
 } from "./types";
+import { MOVES_IN_A_ROW } from "./useGame";
 
 export function createCircles({
   gridSizeY,
@@ -312,15 +314,12 @@ export function isCanBeSurroundedRecursive({
   if (checkedTemp.has(index)) return true;
 
   // Lets limit depth of the rersion until better algorithm is applied
-  /*   console.log("..........................................DEPTH", depth); */
+
   if (depth >= 60) {
     return true;
   }
 
   const col = index % gridSizeX;
-  /* 
-  console.log(`1_inside_recursion__${index}____prevIndex`, prevIndex);
-  console.log(`2_inside_recursion__${index}____index`, index); */
 
   let preNeighbors = [
     index - 1, // left
@@ -331,8 +330,7 @@ export function isCanBeSurroundedRecursive({
 
   let neighbors = [];
 
-  /*   console.log(`3_inside_recursion__${index}____preNeighbors`, preNeighbors) */ if (!preNeighbors.length)
-    return false;
+  if (!preNeighbors.length) return false;
 
   if (prevIndex) {
     preNeighbors = preNeighbors.filter((x) => x !== prevIndex);
@@ -343,8 +341,6 @@ export function isCanBeSurroundedRecursive({
       neighbors.push(neighborIndex);
     }
   }
-
-  /*   neighbors = [...preNeighbors]; */
 
   // Out of bounds
   for (const neighborIndex of neighbors) {
@@ -360,13 +356,8 @@ export function isCanBeSurroundedRecursive({
 
   let allSurrounded = true;
 
-  /*   console.log(`4.0_!!!!!!!!!___neighbors_checked`, checked);
-  console.log(`4_!!!!!!!!!___neighbors`, neighbors); */
-
   for (const neighborIndex of neighbors) {
     const neighbor = circles[neighborIndex];
-
-    /*   console.log(`5_inside_neighbors__${neighborIndex}____neighbor`); */
 
     if (
       (neighbor.fillColor === palette.grey || neighbor.fillColor === surroundingColor) &&
@@ -392,7 +383,6 @@ export function isCanBeSurroundedRecursive({
         checkingColor,
       })
     ) {
-      /*       console.log(`6_allSurrounded___FALSE__${neighborIndex}`); */
       checked.add(neighborIndex);
       allSurrounded = false;
       failedCheck.add(neighborIndex);
@@ -606,4 +596,33 @@ export function checkAtRisk({
   if (neighbourEnemyCount === 4 || neighbourEnemyCount === 3) isAtRisk = true;
 
   return { isAtRisk, freeTurn };
+}
+
+export function isMoveToBreakBruteforce(
+  { prevUserMove, direction, count }: Required<TBroodforce> & { prevUserMove: number },
+  circles: TCircle[],
+  gridSizeX: number
+): number | null {
+  const isUserBruteforcing = (count || 0) >= MOVES_IN_A_ROW;
+
+  if (!isUserBruteforcing) return null;
+
+  const directions: Record<NonNullable<TBroodforce["direction"]>, number> = {
+    R: prevUserMove + 1, // moving to the right
+    L: prevUserMove - 1, // moving to the left
+    B: prevUserMove + gridSizeX, // moving to the bottom
+    T: prevUserMove - gridSizeX, // moving to the top
+  };
+
+  if (directions[direction]) {
+    const possibleMove = circles[directions[direction]];
+
+    if (!possibleMove) return null;
+
+    if (possibleMove.fillColor === palette.grey && !possibleMove.isSurrounded) {
+      return directions[direction] ?? null;
+    }
+  }
+
+  return null;
 }

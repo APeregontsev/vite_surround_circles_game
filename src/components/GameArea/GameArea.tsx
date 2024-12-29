@@ -43,9 +43,6 @@ export const GameArea = ({}: PropsWithChildren<Props>) => {
   // Blink effect: show -> hide -> show cover circle
   const { isVisible } = useBlink({ computersMove, isPlayerA });
 
-  //---------------------------------------------------
-  /* console.log(".....................................pathToDraw ***", pathToDraw); */
-
   return (
     <div className="canvas-wrapper" ref={canvasRef}>
       <Stage width={canvasWidth} height={canvasHeight} onMouseLeave={mouseLeaveHandler}>

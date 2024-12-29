@@ -6,10 +6,13 @@ import {
   getRandomMoveNextToClicked,
   getSafeIndexForMove,
   isCanBeSurroundedRecursive,
+  isMoveToBreakBruteforce,
   isSurroundedRecursive,
   takeAMoveOnShortestPath,
 } from "./helpers";
-import { TCircle, TPath } from "./types";
+import { TBroodforce, TCircle, TPath } from "./types";
+
+export const MOVES_IN_A_ROW = 2; // for detecting bruteforcing from a user side
 
 type Props = {
   circles: TCircle[];
@@ -35,6 +38,10 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
 
   const [computersMove, setComputersMove] = React.useState<TCircle | null>(null);
 
+  const [isBruteforcing, setIsBruteforcing] = React.useState<TBroodforce>({
+    prevUserMove: null,
+  });
+
   const makeATurn = React.useCallback(
     (index: number) => {
       if (circles[index].fillColor !== palette.grey || circles[index].isSurrounded) {
@@ -42,6 +49,37 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
       }
 
       if (isPlayerA && is_vs_pc) setComputersMove(circles[index]);
+
+      // lets check if user is bruteforcing
+      if (!isPlayerA && is_vs_pc) {
+        if (!isBruteforcing?.prevUserMove) {
+          setIsBruteforcing({ prevUserMove: index });
+        } else {
+          let tempState: TBroodforce = {};
+
+          const directions: Record<number, TBroodforce["direction"]> = {
+            [index - 1]: "R", // moving to the right
+            [index + 1]: "L", // moving to the left
+            [index - gridSizeX]: "B", // moving to the bottom
+            [index + gridSizeX]: "T", // moving to the top
+          };
+
+          const newDirection = directions[isBruteforcing.prevUserMove];
+
+          if (newDirection) {
+            if (isBruteforcing.direction === newDirection) {
+              tempState.count = (isBruteforcing.count || 0) + 1;
+            } else {
+              tempState.count = 1;
+            }
+            tempState.direction = newDirection;
+          }
+
+          tempState.prevUserMove = index;
+
+          setIsBruteforcing(tempState);
+        }
+      }
 
       circles[index].fillColor = activePlayerColor;
       circles[index].isClicked = true;
@@ -110,9 +148,6 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
   React.useEffect(() => {
     if (!isPlayerA || !is_vs_pc || (is_vs_pc && !isPlayerA)) return;
 
-    console.log("activePlayerColor", activePlayerColor === "#1475da" ? "Blue" : "Red");
-    console.log("secondaryPlayerColor", secondaryPlayerColor === "#1475da" ? "Blue" : "Red");
-
     const startOfRange = circles.findIndex((x) => x.isClicked);
     const endOfRange = circles.findLastIndex((x) => x.isClicked);
 
@@ -151,7 +186,6 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
     }
 
     // Possible user turns-------------------------------------------------------------------------------------
-
     const possibleUserMooves: { checkedIndex: number; surroundedBy: TCircle[] }[] = [];
 
     if (true) {
@@ -185,8 +219,6 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
         }
       }
     }
-    console.log("user_turn.............................setTurn<<<<<<<<<<<<<<<<<<<<", possibleUserMooves);
-    console.log("pc_turn.............................setTurn<<<<<<<<<<<<<<<<<<<<", possiblePcMooves);
 
     // Evaluating-------------------------------------------------------------------------------------
 
@@ -196,15 +228,59 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
     const isPcMooves = possiblePcMooves.length && availablePcMooves.length;
     const isUserMooves = possibleUserMooves.length && availableUserMooves.length;
 
+    const priorityMooves = [1, 2];
+
     // 1.
     if (!isPcMooves && !isUserMooves) {
-      console.log("1___makeATurn");
+      // For bruteforce case handling
+      const isMoveToBreakBruteforceValid = isMoveToBreakBruteforce(
+        isBruteforcing as Required<TBroodforce> & { prevUserMove: number },
+        circles,
+        gridSizeX
+      );
+
+      if (isMoveToBreakBruteforceValid) return makeATurn(isMoveToBreakBruteforceValid);
+      // For bruteforce case handling
+
       return makeATurn(getRandomMoveNextToClicked(circles, gridSizeX));
     }
 
     // 2.
     if (!isPcMooves && isUserMooves) {
-      console.log("2___makeATurn");
+      // Add 3 moves to tune the logic
+      const priorityMooves = [1, 2, 3];
+
+      for (let index = 0; index < priorityMooves.length; index++) {
+        const priority = priorityMooves[index];
+
+        const priorityUserMooves = availableUserMooves.filter(
+          (turn) => turn?.surroundedBy?.length === priority
+        );
+
+        if (priorityUserMooves.length) {
+          return makeATurn(
+            getSafeIndexForMove({
+              circles,
+              proposedMoves: priorityUserMooves[0].surroundedBy,
+              allyColor: activePlayerColor,
+              enemyColor: secondaryPlayerColor,
+              gridSizeX,
+            })
+          );
+        }
+      }
+
+      // For bruteforce case handling
+      const isMoveToBreakBruteforceValid = isMoveToBreakBruteforce(
+        isBruteforcing as Required<TBroodforce> & { prevUserMove: number },
+        circles,
+        gridSizeX
+      );
+
+      if (isMoveToBreakBruteforceValid) {
+        return makeATurn(isMoveToBreakBruteforceValid);
+      }
+      // For bruteforce case handling
       return makeATurn(
         takeAMoveOnShortestPath({
           movesArray: availableUserMooves,
@@ -218,8 +294,6 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
 
     // 3.
     if (isPcMooves && !isUserMooves) {
-      console.log("3___makeATurn");
-
       return makeATurn(
         takeAMoveOnShortestPath({
           movesArray: availablePcMooves,
@@ -232,7 +306,6 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
     }
 
     // 4.
-    const priorityMooves = [1, 2];
 
     for (let index = 0; index < priorityMooves.length; index++) {
       const priority = priorityMooves[index];
@@ -240,7 +313,6 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
       const priorityPcMooves = availablePcMooves.filter((turn) => turn?.surroundedBy?.length === priority);
 
       if (priorityPcMooves.length) {
-        console.log("4___makeATurn___PC");
         return makeATurn(
           getSafeIndexForMove({
             circles,
@@ -257,8 +329,6 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
       );
 
       if (priorityUserMooves.length) {
-        console.log("4___makeATurn__USER");
-
         return makeATurn(
           getSafeIndexForMove({
             circles,
@@ -272,7 +342,7 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
     }
 
     // 00.
-    console.log("5___makeATurn");
+
     return makeATurn(
       takeAMoveOnShortestPath({
         movesArray: availablePcMooves,

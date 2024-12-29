@@ -15,12 +15,14 @@ export const Timer = ({}: Props) => {
     isReset: state.isReset,
   }));
 
-  const { toggleTimer, isTimerActive } = useSettings((state) => ({
+  const { toggleTimer, isTimerActive, isTimerPaused, setTimerPause } = useSettings((state) => ({
     toggleTimer: state.toggleTimer,
     isTimerActive: state.isTimerActive,
+    isTimerPaused: state.isPaused,
+    setTimerPause: state.setTimerPause,
   }));
 
-  const { timer, resetTimer } = useTimer(isTimerActive);
+  const { timer, resetTimer } = useTimer(isTimerActive && !isTimerPaused);
 
   function handleShowIndexes() {
     toggleShowIndex();
@@ -33,6 +35,7 @@ export const Timer = ({}: Props) => {
 
   React.useEffect(() => {
     resetTimer();
+    setTimerPause(false);
   }, [isReset]);
 
   return (
@@ -41,7 +44,7 @@ export const Timer = ({}: Props) => {
         i
       </Button>
       <Button icon title="Toggle stopwatch" onClick={handleToggleTimer}>
-        <TimerIcon color={!isTimerActive ? palette.blue : palette.red} />
+        <TimerIcon color={!isTimerActive || isTimerPaused ? palette.blue : palette.red} />
       </Button>
       {timer}
     </div>
