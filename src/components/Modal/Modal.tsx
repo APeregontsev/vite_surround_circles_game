@@ -1,26 +1,14 @@
-import { PropsWithChildren, useEffect } from "react";
+import { PropsWithChildren } from "react";
 import { createPortal } from "react-dom";
 import "./styles.scss";
+import { useCloseOnEscape } from "./useCloseOnEscape";
 
 type Props = { toggleModal: () => void };
 
 export const Modal = ({ toggleModal, children }: PropsWithChildren<Props>) => {
-  useEffect(() => {
-    // Close popup on Escape key pressed
-    const closeOnEscapePressed = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        toggleModal();
-      }
-    };
-    window.addEventListener("keydown", closeOnEscapePressed);
-
-    return () => {
-      // Unbind the event listener on clean up
-      window.removeEventListener("keydown", closeOnEscapePressed);
-    };
-  }, []);
-
   const modalElement = document.getElementById("root");
+
+  useCloseOnEscape(toggleModal);
 
   function onCloseHandler() {
     toggleModal();
