@@ -8,7 +8,7 @@ import { calcScore } from "./helpers";
 import "./styles.scss";
 
 type Props = {};
-const COMPUTER_TITLE = "AI__v__1.1.2";
+const COMPUTER_TITLE = "AI__v__1.1.3";
 
 export const GamePage = ({}: PropsWithChildren<Props>) => {
   const { playerA, playerB } = useSettings((state) => ({

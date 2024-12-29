@@ -247,9 +247,7 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
 
     // 2.
     if (!isPcMooves && isUserMooves) {
-      // Add 3 moves to tune the logic
-      const priorityMooves = [1, 2, 3];
-
+      // Lets first execute priority move if they exist
       for (let index = 0; index < priorityMooves.length; index++) {
         const priority = priorityMooves[index];
 
@@ -307,8 +305,10 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
 
     // 4.
 
-    for (let index = 0; index < priorityMooves.length; index++) {
-      const priority = priorityMooves[index];
+    const lastPriorityMoves = [1, 2, 3, 4, 5, 6, 7];
+
+    for (let index = 0; index < lastPriorityMoves.length; index++) {
+      const priority = lastPriorityMoves[index];
 
       const priorityPcMooves = availablePcMooves.filter((turn) => turn?.surroundedBy?.length === priority);
 
@@ -323,6 +323,9 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
           })
         );
       }
+
+      // Lets skip non priority possible users moves
+      if (priority >= 3) continue;
 
       const priorityUserMooves = availableUserMooves.filter(
         (turn) => turn?.surroundedBy?.length === priority
@@ -341,8 +344,20 @@ export function useGame({ circles, gridSizeX, setCircles, circleDiameter, setPat
       }
     }
 
-    // 00.
+    // 5.
+    // Bruteforce case handling
+    const isMoveToBreakBruteforceValid = isMoveToBreakBruteforce(
+      isBruteforcing as Required<TBroodforce> & { prevUserMove: number },
+      circles,
+      gridSizeX
+    );
 
+    if (isMoveToBreakBruteforceValid) {
+      return makeATurn(isMoveToBreakBruteforceValid);
+    }
+
+    // 00.
+    // For handling edge cases
     return makeATurn(
       takeAMoveOnShortestPath({
         movesArray: availablePcMooves,

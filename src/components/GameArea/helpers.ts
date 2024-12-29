@@ -511,6 +511,9 @@ export function takeAMoveOnShortestPath({
   });
 }
 
+// Checks if possible turn is at risk to be surrendered at next users' turn
+// if so - tries to give a closest possible move
+
 export function getSafeIndexForMove({
   circles,
   proposedMoves,
