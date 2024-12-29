@@ -11,6 +11,18 @@
   align-items: center;
   justify-content: center;
   z-index: 100;
+  animation: blurAnimation 0.1s ease normal;
+}
+
+@keyframes blurAnimation {
+  0% {
+    backdrop-filter: blur(0);
+    background-color: rgba(0, 0, 0, 0);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(2.5px);
+  }
 }
 
 .inner-body {
@@ -23,10 +35,20 @@
   width: 476px;
   padding: 40px;
   min-height: 200px;
+  animation: opacityAnimation 0.1s ease normal;
 
   @media (max-width: 490px) {
     width: 100%;
     padding: 20px;
     margin: 10px;
+  }
+}
+
+@keyframes opacityAnimation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
